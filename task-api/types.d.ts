@@ -1,6 +1,7 @@
-export interface Link {
+export interface LongLink {
     id: string;
-    link: string;
+    shortUrl: string;
+    originalUrl: string;
 }
 
-export type LinkWithoutId = Omit<Link, 'id'>;
+export type LinkWithoutId = Omit<LongLink, 'id'>;

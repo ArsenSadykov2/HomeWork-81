@@ -1,10 +1,10 @@
 import express from 'express';
 import {Error} from "mongoose";
 import Link from "../models/Links";
+import {nanoid} from "nanoid";
 import {LinkWithoutId} from "../types";
 
 const linkRouter = express.Router();
-
 
 linkRouter.get('/', async (req, res, next) => {
     try{
@@ -15,8 +15,8 @@ linkRouter.get('/', async (req, res, next) => {
     }
 });
 
-linkRouter.get('/:id', async (req, res, next) => {
-    const id = req.params.id;
+linkRouter.get('/:shortUrl', async (req, res, next) => {
+    const id = req.params.shortUrl;
     try{
         const link = await  Link.findById(id);
 
@@ -25,7 +25,7 @@ linkRouter.get('/:id', async (req, res, next) => {
             return;
         }
 
-        res.send(link);
+        res.status(301).redirect("https://www.google.com/");
     }catch(err){
         next(err);
     }
@@ -33,22 +33,30 @@ linkRouter.get('/:id', async (req, res, next) => {
 
 
 linkRouter.post('/', async (req, res, next) => {
-    try{
+    try {
+        const originalUrl = req.body.originalUrl;
+
+        if (!originalUrl) {
+            return res.status(400).send({ error: 'URL is required' });
+        }
+
+        const shortUrl = nanoid(7);
+
         const newLink: LinkWithoutId = {
-            link: req.body.title,
+            shortUrl: shortUrl,
+           originalUrl: originalUrl,
         };
 
         const link = new Link(newLink);
         await link.save();
         res.send(link);
-    }catch(error){
+
+    } catch (error) {
         if(error instanceof Error.ValidationError){
             res.status(400).send(error)
             return;
         }
         next(error);
     }
-
 });
-
 export default linkRouter;
