@@ -2,15 +2,15 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const LinkSchema = new Schema({
+const LinksSchema = new Schema({
     originalUrl: {
         type: String,
         required: true },
     shortUrl: {
-        type: mongoose.Schema.ObjectId,
+        type: String,
         required: true,
         unique: true }
 });
 
-const Link = mongoose.model('Link', LinkSchema);
+const Link = mongoose.model('Link', LinksSchema);
 export default Link;

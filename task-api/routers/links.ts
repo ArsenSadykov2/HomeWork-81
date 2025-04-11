@@ -1,8 +1,7 @@
 import express from 'express';
 import {Error} from "mongoose";
-import Link from "../models/Links";
-import {nanoid} from "nanoid";
 import {LinkWithoutId} from "../types";
+import Link from "../models/Links";
 
 const linkRouter = express.Router();
 
@@ -15,36 +14,40 @@ linkRouter.get('/', async (req, res, next) => {
     }
 });
 
-linkRouter.get('/:shortUrl', async (req, res, next) => {
-    const id = req.params.shortUrl;
-    try{
-        const link = await  Link.findById(id);
+linkRouter.get('/:shortUrl', async (req, res) => {
+    try {
+        const shortUrl = req.params.shortUrl;
+        const link = await Link.findOne({ shortUrl });
 
         if(!link){
-            res.status(404).send("Link not found");
+            res.status(404).send("Product not found");
             return;
         }
 
-        res.status(301).redirect("https://www.google.com/");
-    }catch(err){
-        next(err);
+        let redirectUrl = link.originalUrl;
+
+            if (!redirectUrl.startsWith('http')) {
+                redirectUrl = 'https://' + redirectUrl;
+            }
+
+        res.redirect(302, redirectUrl);
+
+    } catch (err) {
+        res.status(500).send('Что-то пошло не так');
     }
 });
-
 
 linkRouter.post('/', async (req, res, next) => {
     try {
         const originalUrl = req.body.originalUrl;
 
-        if (!originalUrl) {
-            return res.status(400).send({ error: 'URL is required' });
-        }
+        const { nanoid } = require('nanoid/non-secure');
 
         const shortUrl = nanoid(7);
 
         const newLink: LinkWithoutId = {
+            originalUrl: originalUrl,
             shortUrl: shortUrl,
-           originalUrl: originalUrl,
         };
 
         const link = new Link(newLink);

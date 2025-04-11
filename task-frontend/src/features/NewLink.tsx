@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Typography } from "@mui/material";
-import LinkForm from "./LinkForm.tsx";
 import { useAppDispatch } from "../app/hooks.ts";
 import { LinkWithoutId } from "../types";
 import { createLink } from "./LinkThunks.ts";
+import LinkForm from "./LinkForm.tsx";
 
 const NewLink = () => {
     const dispatch = useAppDispatch();

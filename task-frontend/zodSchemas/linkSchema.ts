@@ -2,5 +2,5 @@ import {z} from "zod";
 
 export const linkSchema = z.object({
     originalUrl: z.string()
-        .min(1, 'Title is required')
+        .min(1,'Title is required'),
 });

@@ -1,6 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 
-import {Link, LinkWithoutId} from "../types";
+import {Link, OriginalUrl} from "../types";
 import axiosAPI from "../axiosApi.ts";
 
 export const fetchAllLinks = createAsyncThunk<Link, void>(
@@ -12,10 +12,16 @@ export const fetchAllLinks = createAsyncThunk<Link, void>(
 );
 
 
-export const createLink = createAsyncThunk<{ shortUrl: string }, LinkWithoutId>(
+export const createLink = createAsyncThunk<{ shortUrl: string }, OriginalUrl>(
     'links/createLink',
     async (linkToAdd) => {
-        const response = await axiosAPI.post('/links', linkToAdd);
+        const response = await axiosAPI.post<{ shortUrl: string }>('/links', {
+            originalUrl: linkToAdd.originalUrl
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         return response.data;
     }
 );
